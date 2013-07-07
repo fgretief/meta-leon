@@ -1,0 +1,59 @@
+From: davem <davem@138bc75d-0d04-0410-961f-82ee72b054a4>
+Date: Wed, 9 May 2012 04:57:49 +0000 (+0000)
+Subject: Remove -Y option from linker command line on Linux/Sparc.
+X-Git-Url: http://gcc.gnu.org/git/?p=gcc.git;a=commitdiff_plain;h=a083d7d27d4e2faeba26087356d79890784e3e4a
+
+Remove -Y option from linker command line on Linux/Sparc.
+
+gcc/
+
+	* config/sparc/linux.h (LINK_SPEC): Don't pass "-Y" option.
+	* config/sparc/linux64.h (LINK_ARCH32_SPEC): Likewise.
+	* config/sparc/linux64.h (LINK_ARCH64_SPEC): Likewise.
+
+git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@187309 138bc75d-0d04-0410-961f-82ee72b054a4
+---
+
+--- gcc-4.7.2.orig/gcc/ChangeLog
++++ gcc-4.7.2/gcc/ChangeLog
+@@ -1641,3 +1641,9 @@
++2012-05-08  David S. Miller  <davem@davemloft.net>
++
++	* config/sparc/linux.h (LINK_SPEC): Don't pass "-Y" option.
++	* config/sparc/linux64.h (LINK_ARCH32_SPEC): Likewise.
++	* config/sparc/linux64.h (LINK_ARCH64_SPEC): Likewise.
++
+ 2012-05-08  Hans-Peter Nilsson  <hp@axis.com>
+ 
+ 	PR target/53272
+--- gcc-4.7.2.orig/gcc/config/sparc/linux.h
++++ gcc-4.7.2/gcc/config/sparc/linux.h
+@@ -87,7 +87,7 @@
+ #define GLIBC_DYNAMIC_LINKER SYSTEMLIBS_DIR "ld-linux.so.2"
+ 
+ #undef  LINK_SPEC
+-#define LINK_SPEC "-m elf32_sparc -Y P,/usr/lib %{shared:-shared} \
++#define LINK_SPEC "-m elf32_sparc %{shared:-shared} \
+   %{!mno-relax:%{!r:-relax}} \
+   %{!shared: \
+     %{!static: \
+--- gcc-4.7.2.orig/gcc/config/sparc/linux64.h
++++ gcc-4.7.2/gcc/config/sparc/linux64.h
+@@ -105,7 +105,7 @@
+   { "link_arch_default", LINK_ARCH_DEFAULT_SPEC },	  \
+   { "link_arch",	 LINK_ARCH_SPEC },
+ 
+-#define LINK_ARCH32_SPEC "-m elf32_sparc -Y P,%R/usr/lib %{shared:-shared} \
++#define LINK_ARCH32_SPEC "-m elf32_sparc %{shared:-shared} \
+   %{!shared: \
+     %{!static: \
+       %{rdynamic:-export-dynamic} \
+@@ -113,7 +113,7 @@
+       %{static:-static}} \
+ "
+ 
+-#define LINK_ARCH64_SPEC "-m elf64_sparc -Y P,%R/usr/lib64 %{shared:-shared} \
++#define LINK_ARCH64_SPEC "-m elf64_sparc %{shared:-shared} \
+   %{!shared: \
+     %{!static: \
+       %{rdynamic:-export-dynamic} \
