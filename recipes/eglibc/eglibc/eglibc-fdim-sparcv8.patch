@@ -1,0 +1,30 @@
+Fixes for the following assembler error when building with a SPARC v8
+architecture (eg. LEON3 processors).
+
+../sysdeps/sparc/sparc32/fpu/s_fdim.S: Assembler messages:
+../sysdeps/sparc/sparc32/fpu/s_fdim.S:33: Error: Architecture mismatch on "fnegd".
+../sysdeps/sparc/sparc32/fpu/s_fdim.S:33:  (Requires v9|v9a|v9b; requested architecture is v8.)
+
+The fnegd opcode is only available in SPARC v9. In SPARC v8 one use a
+fnegs/fmovs pair to get the same results.
+
+These file were orignally added via this patch:
+
+[1] http://sourceware.org/ml/libc-alpha/2013-01/msg00559.html
+
+Author: Francois Retief <fgretief at gmail dot com>
+--- libc.orig/sysdeps/sparc/sparc32/fpu/s_fdim.S
++++ libc/sysdeps/sparc/sparc32/fpu/s_fdim.S
+@@ -30,7 +30,12 @@ ENTRY(__fdim)
+ 	fbug	1f
+ 	 st	%g0, [%sp + 76]
+ 	ldd	[%sp + 72], %f0
++#if defined(__sparc_v8__)
++	fnegs	%f0, %f2
++	fmovs	%f1, %f3
++#else /* SPARC v9 */
+ 	fnegd	%f0, %f2
++#endif
+ 1:	retl
+ 	 fsubd	%f0, %f2, %f0
+ END(__fdim)
